@@ -1,8 +1,8 @@
 import os
-import re
 from bs4 import BeautifulSoup
 import pymorphy2
 import nltk
+import re
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -23,9 +23,12 @@ def tokenize_html(html_content):
 
 def clean_tokens(tokens):
     cleaned_tokens = []
+    pattern = re.compile(r'^[а-яА-ЯёЁ]{1,20}$')
+
     for token in tokens:
-        if token.isalpha() and token.lower() not in stop_words:
+        if pattern.match(token) and token.lower() not in stop_words:
             cleaned_tokens.append(token.lower())
+
     return list(set(cleaned_tokens))
 
 
