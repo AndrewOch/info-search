@@ -27,12 +27,17 @@ def crawl_site(start_url, max_links=100):
 
             links_on_page = get_links(current_url)
             for link in links_on_page:
-                if len(crawled_links) >= max_links:
-                    return crawled_links
-                if link not in visited_urls:
-                    links_to_visit.append(link)
-                    crawled_links.append(link)
-
+                if (len(crawled_links) >= max_links or
+                        link in visited_urls or
+                        '#' in link or
+                        link.endswith('.svg') or
+                        link.endswith('.png') or
+                        link.endswith('.jpg') or
+                        link.endswith('.jpeg') or
+                        link.endswith('.webp')):
+                    continue
+                links_to_visit.append(link)
+                crawled_links.append(link)
     return crawled_links
 
 
@@ -43,7 +48,7 @@ def save_links_to_file(links, filename):
 
 
 start_url = 'https://ru.wikipedia.org/wiki/Римская_империя'
-crawled_links = crawl_site(start_url, max_links=200)
+crawled_links = crawl_site(start_url, max_links=100)
 
 output_file = 'crawled_links.txt'
 save_links_to_file(crawled_links, output_file)

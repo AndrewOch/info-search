@@ -2,11 +2,11 @@ import requests
 import os
 
 
-def download_page(url, folder_path):
+def download_page(url, folder_path, index):
     try:
         response = requests.get(url)
         if response.status_code == 200:
-            filename = url.split('/')[-1] + ".html"
+            filename = f"{index}.html"
             filepath = os.path.join(folder_path, filename)
             with open(filepath, 'wb') as f:
                 f.write(response.content)
@@ -15,6 +15,7 @@ def download_page(url, folder_path):
             print(f"Failed to download page {url}. Status code: {response.status_code}")
             return False
     except Exception as e:
+        print(f"An error occurred: {e}")
         return False
 
 
@@ -30,7 +31,6 @@ def get_links_from_file(filename):
     with open(filename, 'r') as file:
         for line in file:
             links.append(line.strip())
-
     return links
 
 
@@ -41,8 +41,8 @@ if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
 downloaded_pages = []
-for url in urls:
-    if download_page(url, output_folder):
+for i, url in enumerate(urls):
+    if download_page(url, output_folder, i + 1):
         downloaded_pages.append(url)
 
 create_index_file(downloaded_pages, output_folder)
