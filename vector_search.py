@@ -1,6 +1,15 @@
 import os
 from collections import defaultdict
 
+import nltk
+from flask import Flask
+from nltk.corpus import stopwords
+
+nltk.download('stopwords')
+stop_words = set(stopwords.words('russian'))
+
+app = Flask(__name__)
+
 
 def load_index(folder_path):
     index = defaultdict(dict)
@@ -30,17 +39,11 @@ def calculate_similarity(query_vector, index):
     return similarity_scores
 
 
-def vector_search(query, index):
+def vector_search(query):
     query_vector = query_to_vector(query, index)
     similarity_scores = calculate_similarity(query_vector, index)
     sorted_docs = sorted(similarity_scores.items(), key=lambda x: x[1], reverse=True)
     return sorted_docs
 
 
-lemmas_index = load_index('lemmas_tf_idf')
-
-while True:
-    query = input("\nEnter your search query: ")
-    results = vector_search(query, lemmas_index)
-    for doc_id, score in results:
-        print(f"{doc_id} {score:.5f}")
+index = load_index('lemmas_tf_idf')
