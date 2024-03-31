@@ -2,13 +2,10 @@ import os
 from collections import defaultdict
 
 import nltk
-from flask import Flask
 from nltk.corpus import stopwords
 
 nltk.download('stopwords')
 stop_words = set(stopwords.words('russian'))
-
-app = Flask(__name__)
 
 
 def load_index(folder_path):

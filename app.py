@@ -10,13 +10,21 @@ app = Flask(__name__)
 def search():
     if request.method == 'POST':
         query = preprocess_query(request.form['query'])
-        raw_results = vector_search(query)[:10]
+        title_matches = [doc_id for doc_id, title in titles.items() if query.lower() in title.lower()]
+
+        raw_results = vector_search(query)
+        vector_search_results = [doc_id for doc_id, _ in raw_results if doc_id not in title_matches]
+
+        combined_results = title_matches[:10] + vector_search_results
+        combined_results = combined_results[:10]
+
         results = [{
             'doc_id': doc_id,
-            'score': score,
+            'score': titles.get(doc_id, 'No title found'),
             'title': titles.get(doc_id, 'No title found'),
             'url': urls.get(doc_id, 'No URL found')
-        } for doc_id, score in raw_results]
+        } for doc_id in combined_results]
+
         return render_template('search.html', query=query, results=results)
     return render_template('search.html', query='', results=[])
 
